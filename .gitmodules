@@ -1,0 +1,3 @@
+[submodule "ethernaut/15_naught_coin/lib/openzeppelin-contracts"]
+	path = ethernaut/15_naught_coin/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
