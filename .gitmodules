@@ -4,3 +4,6 @@
 [submodule "ethernaut/19_alien_codex/lib/openzeppelin-contracts"]
 	path = ethernaut/19_alien_codex/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "ethernaut/22_dex/lib/openzeppelin-contracts"]
+	path = ethernaut/22_dex/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
