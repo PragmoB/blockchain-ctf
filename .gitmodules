@@ -13,3 +13,6 @@
 [submodule "ethernaut/24_puzzle_wallet/lib/openzeppelin-contracts"]
 	path = ethernaut/24_puzzle_wallet/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "ethernaut/25_motorbike/lib/openzeppelin-contracts"]
+	path = ethernaut/25_motorbike/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
