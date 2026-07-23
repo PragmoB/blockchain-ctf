@@ -1,0 +1,14 @@
+MAX_CAPACITY=1~16bit
+ANIMAL_MASK=177~256bit
+NEXT_ID_MASK=161~176bit
+OWNER_MASK=1~160bit
+
+encodeAnimalName=96-8*n~96 bit
+
+--------setAnimalAndSpin---------
+encodedAnimal=80-8*n~80bit
+nextCrateId=1~16bit
+
+(carousel[nextCrateId] & ~NEXT_ID_MASK)=1~160bit,177~256bit
+(encodedAnimal << 160 + 16)=257-8*n~256bit
+((nextCrateId + 1) % MAX_CAPACITY) << 160=161~176bit
