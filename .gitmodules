@@ -19,3 +19,6 @@
 [submodule "ethernaut/31_stake/lib/openzeppelin-contracts"]
 	path = ethernaut/31_stake/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "ethernaut/34_bet_house/lib/openzeppelin-contracts"]
+	path = ethernaut/34_bet_house/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
