@@ -25,3 +25,6 @@
 [submodule "ethernaut/35_elliptic_token/lib/openzeppelin-contracts"]
 	path = ethernaut/35_elliptic_token/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "ethernaut/36_cashback/lib/openzeppelin-contracts"]
+	path = ethernaut/36_cashback/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
