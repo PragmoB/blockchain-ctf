@@ -34,3 +34,6 @@
 [submodule "ethernaut/38_unique_nft/lib/openzeppelin-contracts"]
 	path = ethernaut/38_unique_nft/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "ethernaut/39_forger/lib/openzeppelin-contracts"]
+	path = ethernaut/39_forger/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
