@@ -37,3 +37,6 @@
 [submodule "ethernaut/39_forger/lib/openzeppelin-contracts"]
 	path = ethernaut/39_forger/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "ethernaut/40_not_optimistic_portal/lib/openzeppelin-contracts"]
+	path = ethernaut/40_not_optimistic_portal/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
