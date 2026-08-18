@@ -6,6 +6,8 @@ import {Test, console} from "forge-std/Test.sol";
 import {DamnValuableToken} from "../../src/DamnValuableToken.sol";
 import {TrusterLenderPool} from "../../src/truster/TrusterLenderPool.sol";
 
+import {TrusterAttacker} from "../../src/truster/TrusterAttacker.sol";
+
 contract TrusterChallenge is Test {
     address deployer = makeAddr("deployer");
     address player = makeAddr("player");
@@ -51,7 +53,8 @@ contract TrusterChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_truster() public checkSolvedByPlayer {
-        
+        // 트랜잭션 1회 제한이라 컨트랙트 생성 하나로 압축해서 실행
+        new TrusterAttacker(pool, recovery);
     }
 
     /**
